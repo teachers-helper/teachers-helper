@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Образовательная платформа</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: var(--dark);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .auth-container {
+            max-width: 500px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .auth-tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .auth-tab.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .select-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .select-group > div {
+            flex: 1;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .dashboard {
+            padding: 2rem 0;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .group-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .group-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .group-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .group-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .student-list, .lesson-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        .student-item, .lesson-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .student-item:last-child, .lesson-item:last-child {
+            border-bottom: none;
+        }
+        
+        .lesson-status {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-completed {
+            background: #e8f6ef;
+            color: #27ae60;
+        }
+        
+        .status-pending {
+            background: #fef9e7;
+            color: #f39c12;
+        }
+        
+        .status-graded {
+            background: #e8f4fd;
+            color: #3498db;
+        }
+        
+        .grade-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+        
+        .add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background 0.3s, transform 0.3s;
+        }
+        
+        .add-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .rules-content {
+            margin-top: 1.5rem;
+        }
+        
+        .rules-content h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .rules-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .rules-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .invite-code {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .code-display {
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin: 0.5rem 0;
+        }
+        
+        .available-groups {
+            margin-top: 2rem;
+        }
+        
+        .submission-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+        
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .submission-answer {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            border: 1px solid #eee;
+        }
+        
+        .grade-form {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .grade-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .teacher-comment {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content, .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .select-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .groups-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .group-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🎓 Образовательная платформа</div>
+                <div class="user-menu">
+                    <span id="headerUserName"></span>
+                    <button id="headerLogout" class="btn btn-primary hidden">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="loadingScreen" class="hidden" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        font-size: 1.2rem;
+    ">
+        <div>Загрузка...</div>
+    </div>
+
+    <section id="authSection" class="hidden">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="loginTab">Вход</div>
+                    <div class="auth-tab" id="registerTab">Регистрация</div>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginRole">Войти как:</label>
+                        <select id="loginRole" class="form-control" required>
+                            <option value="">Выберите роль</option>
+                            <option value="teacher">Учитель</option>
+                            <option value="student">Ученик</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginEmail">Email:</label>
+                        <input type="email" id="loginEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Пароль:</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-secondary" style="width: 100%;">Войти</button>
+                </form>
+                
+                <form id="registerForm" class="hidden">
+                    <div class="form-group">
+                        <label for="registerRole">Регистрация как:</label>
+                        <select id="registerRole" class="form-control" required>
+                            <option value="">Выберите роль</option>
+                            <option value="teacher">Учитель</option>
+                            <option value="student">Ученик</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">Имя:</label>
+                        <input type="text" id="firstName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Фамилия:</label>
+                        <input type="text" id="lastName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email:</label>
+                        <input type="email" id="registerEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Пароль:</label>
+                        <input type="password" id="registerPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Подтвердите пароль:</label>
+                        <input type="password" id="confirmPassword" class="form-control" required>
+                    </div>
+                    
+                    <div id="teacherFields" class="hidden">
+                        <div class="form-group">
+                            <label for="teacherSubject">Предмет:</label>
+                            <select id="teacherSubject" class="form-control">
+                                <option value="russian">Русский язык</option>
+                                <option value="math">Математика</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacherGrade">Класс:</label>
+                            <select id="teacherGrade" class="form-control">
+                                <option value="5">5 класс</option>
+                                <option value="6">6 класс</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="studentFields" class="hidden">
+                        <div class="select-group">
+                            <div class="form-group">
+                                <label for="studentSubject">Предмет:</label>
+                                <select id="studentSubject" class="form-control">
+                                    <option value="russian">Русский язык</option>
+                                    <option value="math">Математика</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentGrade">Класс:</label>
+                                <select id="studentGrade" class="form-control">
+                                    <option value="5">5 класс</option>
+                                    <option value="6">6 класс</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-secondary" style="width: 100%;">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="teacherDashboard" class="dashboard hidden">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Панель учителя</h1>
+                <div>
+                    <span id="teacherName"></span>
+                    <button id="teacherProfile" class="btn btn-primary">Мой профиль</button>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="groupsCount">0</div>
+                    <div class="stat-label">Групп</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="studentsCount">0</div>
+                    <div class="stat-label">Учеников</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="lessonsCount">0</div>
+                    <div class="stat-label">Уроков</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="submissionsCount">0</div>
+                    <div class="stat-label">Работ на проверку</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Мои группы</h2>
+                    <div class="add-btn" id="addGroupBtn" title="Создать группу">+</div>
+                </div>
+                <div class="groups-grid" id="teacherGroupsList">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="studentDashboard" class="dashboard hidden">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Панель ученика</h1>
+                <div>
+                    <span id="studentName"></span>
+                    <button id="studentProfile" class="btn btn-primary">Мой профиль</button>
+                    <button id="joinGroupBtn" class="btn btn-secondary">Вступить в группу</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Правила и материалы</h2>
+                </div>
+                <div class="rules-content" id="studentRules">
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Мои группы</h2>
+                </div>
+                <div class="groups-grid" id="studentGroupsList">
+                </div>
+            </div>
+            
+            <div class="card available-groups hidden" id="availableGroupsCard">
+                <div class="card-header">
+                    <h2 class="card-title">Доступные группы</h2>
+                </div>
+                <div class="groups-grid" id="availableGroupsList">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="profileModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Мой профиль</h2>
+                <button class="close-btn" id="closeProfileModal">&times;</button>
+            </div>
+            <div id="profileContent">
+            </div>
+        </div>
+    </div>
+
+    <div id="createGroupModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Создать новую группу</h2>
+                <button class="close-btn" id="closeGroupModal">&times;</button>
+            </div>
+            <form id="createGroupForm">
+                <div class="form-group">
+                    <label for="groupName">Название группы:</label>
+                    <input type="text" id="groupName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="groupSubject">Предмет:</label>
+                    <select id="groupSubject" class="form-control" required>
+                        <option value="russian">Русский язык</option>
+                        <option value="math">Математика</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="groupGrade">Класс:</label>
+                    <select id="groupGrade" class="form-control" required>
+                        <option value="5">5 класс</option>
+                        <option value="6">6 класс</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="groupDescription">Описание (необязательно):</label>
+                    <textarea id="groupDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-secondary">Создать группу</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addStudentModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить ученика в группу</h2>
+                <button class="close-btn" id="closeStudentModal">&times;</button>
+            </div>
+            <form id="addStudentForm">
+                <div class="form-group">
+                    <label for="studentFirstName">Имя ученика:</label>
+                    <input type="text" id="studentFirstName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentLastName">Фамилия ученика:</label>
+                    <input type="text" id="studentLastName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentEmail">Email ученика:</label>
+                    <input type="email" id="studentEmail" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-secondary">Добавить ученика</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addLessonModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Добавить урок</h2>
+                <button class="close-btn" id="closeLessonModal">&times;</button>
+            </div>
+            <form id="addLessonForm">
+                <div class="form-group">
+                    <label for="lessonTitle">Название урока:</label>
+                    <input type="text" id="lessonTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="lessonContent">Задание или пример:</label>
+                    <textarea id="lessonContent" class="form-control" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="lessonDeadline">Срок выполнения (необязательно):</label>
+                    <input type="date" id="lessonDeadline" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-secondary">Добавить урок</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="groupDetailsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="groupDetailsTitle">Детали группы</h2>
+                <button class="close-btn" id="closeGroupDetailsModal">&times;</button>
+            </div>
+            <div id="groupDetailsContent">
+            </div>
+        </div>
+    </div>
+
+    <div id="solveLessonModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="solveLessonTitle">Решить задание</h2>
+                <button class="close-btn" id="closeSolveLessonModal">&times;</button>
+            </div>
+            <div id="solveLessonContent">
+            </div>
+            <div class="form-group">
+                <label for="studentAnswer">Ваш ответ:</label>
+                <textarea id="studentAnswer" class="form-control" rows="6" placeholder="Введите ваше решение..."></textarea>
+            </div>
+            <button class="btn btn-secondary" onclick="submitLessonSolution()" style="width: 100%;">Отправить на проверку</button>
+        </div>
+    </div>
+
+    <div id="reviewSubmissionsModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="reviewSubmissionsTitle">Проверка работ</h2>
+                <button class="close-btn" id="closeReviewSubmissionsModal">&times;</button>
+            </div>
+            <div id="reviewSubmissionsContent">
+            </div>
+        </div>
+    </div>
+
+    <div id="joinGroupModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Вступить в группу</h2>
+                <button class="close-btn" id="closeJoinGroupModal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="inviteCodeInput">Введите код приглашения:</label>
+                <input type="text" id="inviteCodeInput" class="form-control" placeholder="Например: GRP-12345">
+            </div>
+            <button class="btn btn-secondary" onclick="joinGroupByCode()" style="width: 100%;">Вступить в группу</button>
+            
+            <div class="available-groups" style="margin-top: 2rem;">
+                <h3>Или выберите из доступных групп:</h3>
+                <div id="joinGroupsList">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 Образовательная платформа. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data storage - using localStorage for demo
+        // In real app, this would be replaced with API calls to a backend
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let groups = JSON.parse(localStorage.getItem('groups')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let currentGroupId = null;
+        let currentLessonId = null;
+
+        // DOM Elements
+        const authSection = document.getElementById('authSection');
+        const teacherDashboard = document.getElementById('teacherDashboard');
+        const studentDashboard = document.getElementById('studentDashboard');
+        const loadingScreen = document.getElementById('loadingScreen');
+        
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        
+        const teacherFields = document.getElementById('teacherFields');
+        const studentFields = document.getElementById('studentFields');
+        const registerRole = document.getElementById('registerRole');
+        const loginRole = document.getElementById('loginRole');
+        
+        const teacherName = document.getElementById('teacherName');
+        const studentName = document.getElementById('studentName');
+        const headerUserName = document.getElementById('headerUserName');
+        const headerLogout = document.getElementById('headerLogout');
+        const teacherProfile = document.getElementById('teacherProfile');
+        const studentProfile = document.getElementById('studentProfile');
+        const joinGroupBtn = document.getElementById('joinGroupBtn');
+        
+        const teacherGroupsList = document.getElementById('teacherGroupsList');
+        const studentGroupsList = document.getElementById('studentGroupsList');
+        const availableGroupsList = document.getElementById('availableGroupsList');
+        const availableGroupsCard = document.getElementById('availableGroupsCard');
+        const studentRules = document.getElementById('studentRules');
+        
+        const groupsCount = document.getElementById('groupsCount');
+        const studentsCount = document.getElementById('studentsCount');
+        const lessonsCount = document.getElementById('lessonsCount');
+        const submissionsCount = document.getElementById('submissionsCount');
+        
+        // Modals
+        const profileModal = document.getElementById('profileModal');
+        const createGroupModal = document.getElementById('createGroupModal');
+        const addStudentModal = document.getElementById('addStudentModal');
+        const addLessonModal = document.getElementById('addLessonModal');
+        const groupDetailsModal = document.getElementById('groupDetailsModal');
+        const solveLessonModal = document.getElementById('solveLessonModal');
+        const reviewSubmissionsModal = document.getElementById('reviewSubmissionsModal');
+        const joinGroupModal = document.getElementById('joinGroupModal');
+        
+        // Buttons
+        const addGroupBtn = document.getElementById('addGroupBtn');
+        const closeProfileModal = document.getElementById('closeProfileModal');
+        const closeGroupModal = document.getElementById('closeGroupModal');
+        const closeStudentModal = document.getElementById('closeStudentModal');
+        const closeLessonModal = document.getElementById('closeLessonModal');
+        const closeGroupDetailsModal = document.getElementById('closeGroupDetailsModal');
+        const closeSolveLessonModal = document.getElementById('closeSolveLessonModal');
+        const closeReviewSubmissionsModal = document.getElementById('closeReviewSubmissionsModal');
+        const closeJoinGroupModal = document.getElementById('closeJoinGroupModal');
+        
+        // Forms
+        const createGroupForm = document.getElementById('createGroupForm');
+        const addStudentForm = document.getElementById('addStudentForm');
+        const addLessonForm = document.getElementById('addLessonForm');
+
+        // Rules for subjects
+        const subjectRules = {
+            russian: {
+                title: "Русский язык",
+                rules: [
+                    "Правописание безударных гласных в корне слова",
+                    "Правописание приставок и суффиксов",
+                    "Части речи: имя существительное, прилагательное, глагол",
+                    "Синтаксис: простое предложение, главные и второстепенные члены",
+                    "Пунктуация: знаки препинания в конце предложения, запятая при перечислении"
+                ],
+                materials: [
+                    "Учебник: Русский язык. 5 класс. Ладыженская Т.А.",
+                    "Рабочая тетрадь по русскому языку для 5 класса",
+                    "Сборник упражнений по орфографии и пунктуации"
+                ]
+            },
+            math: {
+                title: "Математика",
+                rules: [
+                    "Натуральные числа и действия с ними",
+                    "Обыкновенные дроби: сложение, вычитание, сравнение",
+                    "Десятичные дроби: чтение, запись, действия",
+                    "Геометрические фигуры: треугольник, прямоугольник, круг",
+                    "Единицы измерения: длина, масса, время"
+                ],
+                materials: [
+                    "Учебник: Математика. 5 класс. Виленкин Н.Я.",
+                    "Рабочая тетрадь по математике для 5 класса",
+                    "Сборник задач и упражнений по математике"
+                ]
+            }
+        };
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initApp);
+        
+        loginTab.addEventListener('click', () => switchAuthTab('login'));
+        registerTab.addEventListener('click', () => switchAuthTab('register'));
+        
+        registerRole.addEventListener('change', toggleRegisterFields);
+        
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        
+        headerLogout.addEventListener('click', logout);
+        teacherProfile.addEventListener('click', showProfile);
+        studentProfile.addEventListener('click', showProfile);
+        joinGroupBtn.addEventListener('click', () => joinGroupModal.classList.remove('hidden'));
+        
+        addGroupBtn.addEventListener('click', () => createGroupModal.classList.remove('hidden'));
+        
+        closeProfileModal.addEventListener('click', () => profileModal.classList.add('hidden'));
+        closeGroupModal.addEventListener('click', () => createGroupModal.classList.add('hidden'));
+        closeStudentModal.addEventListener('click', () => addStudentModal.classList.add('hidden'));
+        closeLessonModal.addEventListener('click', () => addLessonModal.classList.add('hidden'));
+        closeGroupDetailsModal.addEventListener('click', () => groupDetailsModal.classList.add('hidden'));
+        closeSolveLessonModal.addEventListener('click', () => solveLessonModal.classList.add('hidden'));
+        closeReviewSubmissionsModal.addEventListener('click', () => reviewSubmissionsModal.classList.add('hidden'));
+        closeJoinGroupModal.addEventListener('click', () => joinGroupModal.classList.add('hidden'));
+        
+        createGroupForm.addEventListener('submit', handleCreateGroup);
+        addStudentForm.addEventListener('submit', handleAddStudent);
+        addLessonForm.addEventListener('submit', handleAddLesson);
+
+        // Functions
+        function initApp() {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                
+                if (currentUser) {
+                    showDashboard();
+                } else {
+                    showAuth();
+                }
+            }, 500);
+        }
+
+        function switchAuthTab(tab) {
+            loginTab.classList.toggle('active', tab === 'login');
+            registerTab.classList.toggle('active', tab === 'register');
+            loginForm.classList.toggle('hidden', tab !== 'login');
+            registerForm.classList.toggle('hidden', tab !== 'register');
+        }
+
+        function toggleRegisterFields() {
+            const role = registerRole.value;
+            teacherFields.classList.toggle('hidden', role !== 'teacher');
+            studentFields.classList.toggle('hidden', role !== 'student');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const role = loginRole.value;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const hashedPassword = btoa(password);
+            
+            const user = users.find(u => u.email === email && u.password === hashedPassword && u.role === role);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showDashboard();
+                loginForm.reset();
+            } else {
+                alert('Неверный email или пароль!');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            
+            const role = registerRole.value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Пароли не совпадают!');
+                return;
+            }
+            
+            if (users.find(user => user.email === email)) {
+                alert('Пользователь с таким email уже зарегистрирован!');
+                return;
+            }
+            
+            let subject, grade;
+            
+            if (role === 'teacher') {
+                subject = document.getElementById('teacherSubject').value;
+                grade = document.getElementById('teacherGrade').value;
+            } else {
+                subject = document.getElementById('studentSubject').value;
+                grade = document.getElementById('studentGrade').value;
+            }
+            
+            const hashedPassword = btoa(password);
+            
+            const newUser = {
+                id: generateId(),
+                role,
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword,
+                subject,
+                grade,
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            saveUsers();
+            
+            alert('Регистрация успешна! Теперь вы можете войти.');
+            switchAuthTab('login');
+            registerForm.reset();
+        }
+
+        function handleCreateGroup(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('groupName').value;
+            const subject = document.getElementById('groupSubject').value;
+            const grade = document.getElementById('groupGrade').value;
+            const description = document.getElementById('groupDescription').value;
+            
+            const inviteCode = `GRP-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+            
+            const newGroup = {
+                id: generateId(),
+                name,
+                subject,
+                grade,
+                description,
+                teacherId: currentUser.id,
+                teacherName: `${currentUser.firstName} ${currentUser.lastName}`,
+                inviteCode: inviteCode,
+                students: [],
+                lessons: [],
+                createdAt: new Date().toISOString()
+            };
+            
+            groups.push(newGroup);
+            saveGroups();
+            
+            createGroupForm.reset();
+            createGroupModal.classList.add('hidden');
+            renderTeacherDashboard();
+            
+            alert(`Группа создана! Код приглашения: ${inviteCode}`);
+        }
+
+        function handleAddStudent(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('studentFirstName').value;
+            const lastName = document.getElementById('studentLastName').value;
+            const email = document.getElementById('studentEmail').value;
+            
+            let student = users.find(u => u.email === email && u.role === 'student');
+            
+            if (!student) {
+                student = {
+                    id: generateId(),
+                    role: 'student',
+                    firstName,
+                    lastName,
+                    email,
+                    password: btoa('temp123'),
+                    subject: groups.find(g => g.id === currentGroupId).subject,
+                    grade: groups.find(g => g.id === currentGroupId).grade,
+                    createdAt: new Date().toISOString()
+                };
+                
+                users.push(student);
+                saveUsers();
+            }
+            
+            const group = groups.find(g => g.id === currentGroupId);
+            if (!group.students.find(s => s.id === student.id)) {
+                group.students.push({
+                    id: student.id,
+                    firstName: student.firstName,
+                    lastName: student.lastName,
+                    email: student.email,
+                    joinedAt: new Date().toISOString()
+                });
+                
+                saveGroups();
+            } else {
+                alert('Этот ученик уже в группе!');
+            }
+            
+            addStudentForm.reset();
+            addStudentModal.classList.add('hidden');
+            renderTeacherDashboard();
+        }
+
+        function handleAddLesson(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('lessonTitle').value;
+            const content = document.getElementById('lessonContent').value;
+            const deadline = document.getElementById('lessonDeadline').value;
+            
+            const newLesson = {
+                id: generateId(),
+                title,
+                content,
+                deadline: deadline || null,
+                createdAt: new Date().toISOString(),
+                submissions: []
+            };
+            
+            const group = groups.find(g => g.id === currentGroupId);
+            group.lessons.push(newLesson);
+            
+            saveGroups();
+            
+            addLessonForm.reset();
+            addLessonModal.classList.add('hidden');
+            renderTeacherDashboard();
+        }
+
+        function openAddStudentModal(groupId) {
+            currentGroupId = groupId;
+            addStudentModal.classList.remove('hidden');
+        }
+
+        function openAddLessonModal(groupId) {
+            currentGroupId = groupId;
+            addLessonModal.classList.remove('hidden');
+        }
+
+        function openSolveLessonModal(groupId, lessonId) {
+            currentGroupId = groupId;
+            currentLessonId = lessonId;
+            
+            const group = groups.find(g => g.id === groupId);
+            const lesson = group.lessons.find(l => l.id === lessonId);
+            
+            document.getElementById('solveLessonTitle').textContent = lesson.title;
+            document.getElementById('solveLessonContent').innerHTML = `
+                <div class="form-group">
+                    <label>Задание:</label>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-top: 0.5rem;">
+                        ${lesson.content}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('studentAnswer').value = '';
+            
+            solveLessonModal.classList.remove('hidden');
+        }
+
+        function submitLessonSolution() {
+            const answer = document.getElementById('studentAnswer').value.trim();
+            
+            if (!answer) {
+                alert('Пожалуйста, введите ваш ответ!');
+                return;
+            }
+            
+            const group = groups.find(g => g.id === currentGroupId);
+            const lesson = group.lessons.find(l => l.id === currentLessonId);
+            
+            const existingSubmissionIndex = lesson.submissions.findIndex(s => s.studentId === currentUser.id);
+            
+            const submission = {
+                studentId: currentUser.id,
+                studentName: `${currentUser.firstName} ${currentUser.lastName}`,
+                answer: answer,
+                submittedAt: new Date().toISOString(),
+                status: 'submitted',
+                grade: null,
+                teacherComment: null
+            };
+            
+            if (existingSubmissionIndex >= 0) {
+                lesson.submissions[existingSubmissionIndex] = submission;
+            } else {
+                lesson.submissions.push(submission);
+            }
+            
+            saveGroups();
+            solveLessonModal.classList.add('hidden');
+            renderStudentDashboard();
+            
+            alert('Ваш ответ отправлен на проверку учителю!');
+        }
+
+        function openReviewSubmissionsModal(groupId, lessonId) {
+            currentGroupId = groupId;
+            currentLessonId = lessonId;
+            
+            const group = groups.find(g => g.id === groupId);
+            const lesson = group.lessons.find(l => l.id === lessonId);
+            
+            document.getElementById('reviewSubmissionsTitle').textContent = `Проверка работ: ${lesson.title}`;
+            
+            let submissionsHtml = '';
+            
+            if (lesson.submissions.length === 0) {
+                submissionsHtml = '<p>Пока нет отправленных работ.</p>';
+            } else {
+                submissionsHtml = lesson.submissions.map(submission => {
+                    const student = group.students.find(s => s.id === submission.studentId);
+                    return `
+                        <div class="submission-item">
+                            <div class="submission-header">
+                                <strong>${student.firstName} ${student.lastName}</strong>
+                                <span class="lesson-status ${submission.status === 'graded' ? 'status-graded' : 'status-pending'}">
+                                    ${submission.status === 'graded' ? 'Проверено' : 'Ожидает проверки'}
+                                </span>
+                            </div>
+                            <div class="submission-answer">
+                                <strong>Ответ ученика:</strong>
+                                <p>${submission.answer}</p>
+                            </div>
+                            ${submission.status === 'graded' ? `
+                                <div class="grade-display">
+                                    Оценка: <span class="grade-badge">${submission.grade}</span>
+                                </div>
+                                ${submission.teacherComment ? `
+                                    <div class="teacher-comment">
+                                        <strong>Комментарий учителя:</strong>
+                                        <p>${submission.teacherComment}</p>
+                                    </div>
+                                ` : ''}
+                            ` : `
+                                <div class="grade-form">
+                                    <div class="form-group">
+                                        <label>Оценка:</label>
+                                        <select id="grade-${submission.studentId}" class="form-control">
+                                            <option value="5">5</option>
+                                            <option value="4">4</option>
+                                            <option value="3">3</option>
+                                            <option value="2">2</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Комментарий:</label>
+                                        <textarea id="comment-${submission.studentId}" class="form-control" rows="3" placeholder="Введите комментарий..."></textarea>
+                                    </div>
+                                    <button class="btn btn-secondary" onclick="gradeSubmission('${submission.studentId}')">Сохранить оценку</button>
+                                </div>
+                            `}
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            document.getElementById('reviewSubmissionsContent').innerHTML = submissionsHtml;
+            reviewSubmissionsModal.classList.remove('hidden');
+        }
+
+        function gradeSubmission(studentId) {
+            const grade = document.getElementById(`grade-${studentId}`).value;
+            const comment = document.getElementById(`comment-${studentId}`).value;
+            
+            const group = groups.find(g => g.id === currentGroupId);
+            const lesson = group.lessons.find(l => l.id === currentLessonId);
+            const submission = lesson.submissions.find(s => s.studentId === studentId);
+            
+            if (submission) {
+                submission.status = 'graded';
+                submission.grade = grade;
+                submission.teacherComment = comment;
+                
+                saveGroups();
+                openReviewSubmissionsModal(currentGroupId, currentLessonId);
+                renderTeacherDashboard();
+                
+                alert('Оценка сохранена!');
+            }
+        }
+
+        function openGroupDetails(groupId) {
+            currentGroupId = groupId;
+            const group = groups.find(g => g.id === groupId);
+            
+            document.getElementById('groupDetailsTitle').textContent = group.name;
+            
+            const studentsHtml = group.students.length > 0 
+                ? group.students.map(student => `
+                    <div class="student-item">
+                        <span>${student.firstName} ${student.lastName}</span>
+                        <span>${student.email}</span>
+                    </div>
+                `).join('')
+                : '<p>В группе пока нет учеников</p>';
+            
+            const lessonsHtml = group.lessons.length > 0 
+                ? group.lessons.map(lesson => {
+                    const gradedCount = lesson.submissions.filter(s => s.status === 'graded').length;
+                    const submittedCount = lesson.submissions.length;
+                    
+                    return `
+                        <div class="lesson-item">
+                            <div>
+                                <strong>${lesson.title}</strong>
+                                <p>${lesson.content}</p>
+                                ${lesson.deadline ? `<small>Срок: ${new Date(lesson.deadline).toLocaleDateString()}</small>` : ''}
+                            </div>
+                            <div>
+                                <span class="lesson-status ${submittedCount === 0 ? 'status-pending' : gradedCount === submittedCount ? 'status-completed' : 'status-graded'}">
+                                    ${gradedCount}/${submittedCount} проверено
+                                </span>
+                                <button class="btn btn-secondary" onclick="openReviewSubmissionsModal('${groupId}', '${lesson.id}')" style="margin-top: 0.5rem;">
+                                    Проверить работы
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')
+                : '<p>В группе пока нет уроков</p>';
+            
+            document.getElementById('groupDetailsContent').innerHTML = `
+                <div class="group-info">
+                    <p><strong>Предмет:</strong> ${group.subject === 'russian' ? 'Русский язык' : 'Математика'}</p>
+                    <p><strong>Класс:</strong> ${group.grade}</p>
+                    ${group.description ? `<p><strong>Описание:</strong> ${group.description}</p>` : ''}
+                </div>
+                
+                <div class="invite-code">
+                    <strong>Код приглашения для учеников:</strong>
+                    <div class="code-display">${group.inviteCode}</div>
+                    <small>Поделитесь этим кодом с учениками, чтобы они могли вступить в группу</small>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <h3>Ученики (${group.students.length})</h3>
+                    <div class="student-list">
+                        ${studentsHtml}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <h3>Уроки (${group.lessons.length})</h3>
+                    <div class="lesson-list">
+                        ${lessonsHtml}
+                    </div>
+                </div>
+            `;
+            
+            groupDetailsModal.classList.remove('hidden');
+        }
+
+        function joinGroupByCode() {
+            const codeInput = document.getElementById('inviteCodeInput');
+            const code = codeInput.value.trim().toUpperCase();
+            
+            if (!code) {
+                alert('Введите код приглашения!');
+                return;
+            }
+            
+            const group = groups.find(g => g.inviteCode === code);
+            
+            if (!group) {
+                alert('Группа с таким кодом не найдена!');
+                return;
+            }
+            
+            if (group.students.find(s => s.id === currentUser.id)) {
+                alert('Вы уже состоите в этой группе!');
+                return;
+            }
+            
+            group.students.push({
+                id: currentUser.id,
+                firstName: currentUser.firstName,
+                lastName: currentUser.lastName,
+                email: currentUser.email,
+                joinedAt: new Date().toISOString()
+            });
+            
+            saveGroups();
+            joinGroupModal.classList.add('hidden');
+            codeInput.value = '';
+            renderStudentDashboard();
+            
+            alert(`Вы успешно вступили в группу "${group.name}"!`);
+        }
+
+        function joinGroupById(groupId) {
+            const group = groups.find(g => g.id === groupId);
+            
+            if (!group) {
+                alert('Группа не найдена!');
+                return;
+            }
+            
+            if (group.students.find(s => s.id === currentUser.id)) {
+                alert('Вы уже состоите в этой группе!');
+                return;
+            }
+            
+            group.students.push({
+                id: currentUser.id,
+                firstName: currentUser.firstName,
+                lastName: currentUser.lastName,
+                email: currentUser.email,
+                joinedAt: new Date().toISOString()
+            });
+            
+            saveGroups();
+            joinGroupModal.classList.add('hidden');
+            renderStudentDashboard();
+            
+            alert(`Вы успешно вступили в группу "${group.name}"!`);
+        }
+
+        function showProfile() {
+            const profileHtml = `
+                <div class="form-group">
+                    <label>Имя:</label>
+                    <p>${currentUser.firstName}</p>
+                </div>
+                <div class="form-group">
+                    <label>Фамилия:</label>
+                    <p>${currentUser.lastName}</p>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <p>${currentUser.email}</p>
+                </div>
+                <div class="form-group">
+                    <label>Роль:</label>
+                    <p>${currentUser.role === 'teacher' ? 'Учитель' : 'Ученик'}</p>
+                </div>
+                <div class="form-group">
+                    <label>Предмет:</label>
+                    <p>${currentUser.subject === 'russian' ? 'Русский язык' : 'Математика'}</p>
+                </div>
+                <div class="form-group">
+                    <label>Класс:</label>
+                    <p>${currentUser.grade}</p>
+                </div>
+            `;
+            
+            document.getElementById('profileContent').innerHTML = profileHtml;
+            profileModal.classList.remove('hidden');
+        }
+
+        function showDashboard() {
+            authSection.classList.add('hidden');
+            headerLogout.classList.remove('hidden');
+            headerUserName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+            
+            if (currentUser.role === 'teacher') {
+                teacherDashboard.classList.remove('hidden');
+                studentDashboard.classList.add('hidden');
+                teacherName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                renderTeacherDashboard();
+            } else {
+                studentDashboard.classList.remove('hidden');
+                teacherDashboard.classList.add('hidden');
+                studentName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                renderStudentDashboard();
+            }
+        }
+
+        function showAuth() {
+            authSection.classList.remove('hidden');
+            teacherDashboard.classList.add('hidden');
+            studentDashboard.classList.add('hidden');
+            headerLogout.classList.add('hidden');
+            headerUserName.textContent = '';
+        }
+
+        function renderTeacherDashboard() {
+            const teacherGroups = groups.filter(g => g.teacherId === currentUser.id);
+            
+            let pendingSubmissions = 0;
+            teacherGroups.forEach(group => {
+                group.lessons.forEach(lesson => {
+                    pendingSubmissions += lesson.submissions.filter(s => s.status === 'submitted').length;
+                });
+            });
+            
+            groupsCount.textContent = teacherGroups.length;
+            studentsCount.textContent = teacherGroups.reduce((total, group) => total + group.students.length, 0);
+            lessonsCount.textContent = teacherGroups.reduce((total, group) => total + group.lessons.length, 0);
+            submissionsCount.textContent = pendingSubmissions;
+            
+            if (teacherGroups.length === 0) {
+                teacherGroupsList.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                        <p>У вас пока нет групп. Создайте первую!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            teacherGroupsList.innerHTML = teacherGroups.map(group => {
+                const pendingSubmissionsInGroup = group.lessons.reduce((total, lesson) => 
+                    total + lesson.submissions.filter(s => s.status === 'submitted').length, 0);
+                
+                return `
+                    <div class="group-card">
+                        <div class="group-name">${group.name}</div>
+                        <div class="group-info">
+                            ${group.subject === 'russian' ? 'Русский язык' : 'Математика'}, ${group.grade} класс
+                            ${group.description ? `<br><small>${group.description}</small>` : ''}
+                        </div>
+                        <div class="group-stats">
+                            <small>Учеников: ${group.students.length} | Уроков: ${group.lessons.length}</small>
+                            ${pendingSubmissionsInGroup > 0 ? `<br><small style="color: var(--warning);">Работ на проверку: ${pendingSubmissionsInGroup}</small>` : ''}
+                        </div>
+                        <div class="group-actions">
+                            <button class="btn btn-primary" onclick="openAddStudentModal('${group.id}')">Добавить ученика</button>
+                            <button class="btn btn-secondary" onclick="openAddLessonModal('${group.id}')">Добавить урок</button>
+                            <button class="btn" onclick="openGroupDetails('${group.id}')">Подробнее</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderStudentDashboard() {
+            const rules = subjectRules[currentUser.subject];
+            studentRules.innerHTML = `
+                <h3>${rules.title} - ${currentUser.grade} класс</h3>
+                <h4>Основные правила:</h4>
+                <ul>
+                    ${rules.rules.map(rule => `<li>${rule}</li>`).join('')}
+                </ul>
+                <h4>Учебные материалы:</h4>
+                <ul>
+                    ${rules.materials.map(material => `<li>${material}</li>`).join('')}
+                </ul>
+            `;
+            
+            const studentGroups = groups.filter(g => 
+                g.students.find(s => s.id === currentUser.id)
+            );
+            
+            if (studentGroups.length === 0) {
+                studentGroupsList.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                        <p>Вы пока не состоите в группах.</p>
+                    </div>
+                `;
+            } else {
+                studentGroupsList.innerHTML = studentGroups.map(group => {
+                    return `
+                        <div class="group-card">
+                            <div class="group-name">${group.name}</div>
+                            <div class="group-info">
+                                ${group.subject === 'russian' ? 'Русский язык' : 'Математика'}, ${group.grade} класс
+                                <br>Учитель: ${group.teacherName}
+                            </div>
+                            <div class="lesson-list">
+                                ${group.lessons.map(lesson => {
+                                    const submission = lesson.submissions.find(s => s.studentId === currentUser.id);
+                                    
+                                    return `
+                                        <div class="lesson-item">
+                                            <div>
+                                                <strong>${lesson.title}</strong>
+                                                <p>${lesson.content}</p>
+                                                ${lesson.deadline ? `<small>Срок: ${new Date(lesson.deadline).toLocaleDateString()}</small>` : ''}
+                                            </div>
+                                            <div>
+                                                ${submission ? `
+                                                    <span class="lesson-status ${submission.status === 'graded' ? 'status-completed' : 'status-graded'}">
+                                                        ${submission.status === 'graded' ? 
+                                                            `Оценка: <span class="grade-badge">${submission.grade}</span>` : 
+                                                            'Ожидает проверки'}
+                                                    </span>
+                                                    ${submission.teacherComment ? `
+                                                        <div class="teacher-comment" style="margin-top: 0.5rem;">
+                                                            <strong>Комментарий учителя:</strong>
+                                                            <p>${submission.teacherComment}</p>
+                                                        </div>
+                                                    ` : ''}
+                                                ` : `
+                                                    <button class="btn btn-secondary" onclick="openSolveLessonModal('${group.id}', '${lesson.id}')">
+                                                        Решить задание
+                                                    </button>
+                                                `}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            const availableGroups = groups.filter(group => 
+                !group.students.find(s => s.id === currentUser.id) && 
+                group.subject === currentUser.subject && 
+                group.grade === currentUser.grade
+            );
+            
+            if (availableGroups.length > 0) {
+                availableGroupsCard.classList.remove('hidden');
+                availableGroupsList.innerHTML = availableGroups.map(group => `
+                    <div class="group-card">
+                        <div class="group-name">${group.name}</div>
+                        <div class="group-info">
+                            ${group.subject === 'russian' ? 'Русский язык' : 'Математика'}, ${group.grade} класс
+                            <br>Учитель: ${group.teacherName}
+                            ${group.description ? `<br><small>${group.description}</small>` : ''}
+                        </div>
+                        <div class="group-stats">
+                            <small>Учеников: ${group.students.length} | Уроков: ${group.lessons.length}</small>
+                        </div>
+                        <button class="btn btn-secondary" onclick="joinGroupById('${group.id}')" style="width: 100%; margin-top: 1rem;">
+                            Вступить в группу
+                        </button>
+                    </div>
+                `).join('');
+                
+                document.getElementById('joinGroupsList').innerHTML = availableGroups.map(group => `
+                    <div class="group-card" style="margin-bottom: 1rem;">
+                        <div class="group-name">${group.name}</div>
+                        <div class="group-info">
+                            Учитель: ${group.teacherName} | Учеников: ${group.students.length}
+                        </div>
+                        <button class="btn btn-secondary" onclick="joinGroupById('${group.id}')" style="width: 100%; margin-top: 0.5rem;">
+                            Вступить в группу
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                availableGroupsCard.classList.add('hidden');
+                document.getElementById('joinGroupsList').innerHTML = '<p>Нет доступных групп для вступления</p>';
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showAuth();
+        }
+
+        function generateId() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function saveUsers() {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function saveGroups() {
+            localStorage.setItem('groups', JSON.stringify(groups));
+        }
+
+        window.openAddStudentModal = openAddStudentModal;
+        window.openAddLessonModal = openAddLessonModal;
+        window.openGroupDetails = openGroupDetails;
+        window.openSolveLessonModal = openSolveLessonModal;
+        window.openReviewSubmissionsModal = openReviewSubmissionsModal;
+        window.submitLessonSolution = submitLessonSolution;
+        window.gradeSubmission = gradeSubmission;
+        window.joinGroupByCode = joinGroupByCode;
+        window.joinGroupById = joinGroupById;
+    </script>
+</body>
+</html>
