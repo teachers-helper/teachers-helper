@@ -458,6 +458,10 @@
             font-style: italic;
         }
         
+        .search-box {
+            margin-bottom: 1.5rem;
+        }
+        
         @media (max-width: 768px) {
             .header-content, .dashboard-header {
                 flex-direction: column;
@@ -656,7 +660,7 @@
                 <div>
                     <span id="studentName"></span>
                     <button id="studentProfile" class="btn btn-primary">Мой профиль</button>
-                    <button id="joinGroupBtn" class="btn btn-secondary">Вступить в группу</button>
+                    <button id="joinGroupBtn" class="btn btn-secondary">Найти группы</button>
                 </div>
             </div>
             
@@ -676,9 +680,12 @@
                 </div>
             </div>
             
-            <div class="card available-groups hidden" id="availableGroupsCard">
+            <div class="card available-groups">
                 <div class="card-header">
                     <h2 class="card-title">Доступные группы</h2>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="groupSearch" class="form-control" placeholder="Поиск групп по названию или предмету...">
                 </div>
                 <div class="groups-grid" id="availableGroupsList">
                 </div>
@@ -739,16 +746,8 @@
             </div>
             <form id="addStudentForm">
                 <div class="form-group">
-                    <label for="studentFirstName">Имя ученика:</label>
-                    <input type="text" id="studentFirstName" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="studentLastName">Фамилия ученика:</label>
-                    <input type="text" id="studentLastName" class="form-control" required>
-                </div>
-                <div class="form-group">
                     <label for="studentEmail">Email ученика:</label>
-                    <input type="email" id="studentEmail" class="form-control" required>
+                    <input type="email" id="studentEmail" class="form-control" required placeholder="Введите email зарегистрированного ученика">
                 </div>
                 <button type="submit" class="btn btn-secondary">Добавить ученика</button>
             </form>
@@ -817,26 +816,6 @@
         </div>
     </div>
 
-    <div id="joinGroupModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Вступить в группу</h2>
-                <button class="close-btn" id="closeJoinGroupModal">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="inviteCodeInput">Введите код приглашения:</label>
-                <input type="text" id="inviteCodeInput" class="form-control" placeholder="Например: GRP-12345">
-            </div>
-            <button class="btn btn-secondary" onclick="joinGroupByCode()" style="width: 100%;">Вступить в группу</button>
-            
-            <div class="available-groups" style="margin-top: 2rem;">
-                <h3>Или выберите из доступных групп:</h3>
-                <div id="joinGroupsList">
-                </div>
-            </div>
-        </div>
-    </div>
-
     <footer>
         <div class="container">
             <p>© 2023 Образовательная платформа. Все права защищены.</p>
@@ -844,8 +823,7 @@
     </footer>
 
     <script>
-        // Data storage - using localStorage for demo
-        // In real app, this would be replaced with API calls to a backend
+        // Data storage
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let groups = JSON.parse(localStorage.getItem('groups')) || [];
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
@@ -879,7 +857,6 @@
         const teacherGroupsList = document.getElementById('teacherGroupsList');
         const studentGroupsList = document.getElementById('studentGroupsList');
         const availableGroupsList = document.getElementById('availableGroupsList');
-        const availableGroupsCard = document.getElementById('availableGroupsCard');
         const studentRules = document.getElementById('studentRules');
         
         const groupsCount = document.getElementById('groupsCount');
@@ -895,7 +872,6 @@
         const groupDetailsModal = document.getElementById('groupDetailsModal');
         const solveLessonModal = document.getElementById('solveLessonModal');
         const reviewSubmissionsModal = document.getElementById('reviewSubmissionsModal');
-        const joinGroupModal = document.getElementById('joinGroupModal');
         
         // Buttons
         const addGroupBtn = document.getElementById('addGroupBtn');
@@ -906,12 +882,14 @@
         const closeGroupDetailsModal = document.getElementById('closeGroupDetailsModal');
         const closeSolveLessonModal = document.getElementById('closeSolveLessonModal');
         const closeReviewSubmissionsModal = document.getElementById('closeReviewSubmissionsModal');
-        const closeJoinGroupModal = document.getElementById('closeJoinGroupModal');
         
         // Forms
         const createGroupForm = document.getElementById('createGroupForm');
         const addStudentForm = document.getElementById('addStudentForm');
         const addLessonForm = document.getElementById('addLessonForm');
+
+        // Search
+        const groupSearch = document.getElementById('groupSearch');
 
         // Rules for subjects
         const subjectRules = {
@@ -961,7 +939,7 @@
         headerLogout.addEventListener('click', logout);
         teacherProfile.addEventListener('click', showProfile);
         studentProfile.addEventListener('click', showProfile);
-        joinGroupBtn.addEventListener('click', () => joinGroupModal.classList.remove('hidden'));
+        joinGroupBtn.addEventListener('click', showAvailableGroups);
         
         addGroupBtn.addEventListener('click', () => createGroupModal.classList.remove('hidden'));
         
@@ -972,14 +950,21 @@
         closeGroupDetailsModal.addEventListener('click', () => groupDetailsModal.classList.add('hidden'));
         closeSolveLessonModal.addEventListener('click', () => solveLessonModal.classList.add('hidden'));
         closeReviewSubmissionsModal.addEventListener('click', () => reviewSubmissionsModal.classList.add('hidden'));
-        closeJoinGroupModal.addEventListener('click', () => joinGroupModal.classList.add('hidden'));
         
         createGroupForm.addEventListener('submit', handleCreateGroup);
         addStudentForm.addEventListener('submit', handleAddStudent);
         addLessonForm.addEventListener('submit', handleAddLesson);
 
+        // Search functionality
+        groupSearch.addEventListener('input', filterGroups);
+
         // Functions
         function initApp() {
+            // Add some demo data if empty
+            if (users.length === 0) {
+                initializeDemoData();
+            }
+            
             setTimeout(() => {
                 loadingScreen.classList.add('hidden');
                 
@@ -989,6 +974,83 @@
                     showAuth();
                 }
             }, 500);
+        }
+
+        function initializeDemoData() {
+            // Demo teacher
+            const demoTeacher = {
+                id: generateId(),
+                role: 'teacher',
+                firstName: 'Мария',
+                lastName: 'Иванова',
+                email: 'teacher@school.ru',
+                password: btoa('123456'),
+                subject: 'russian',
+                grade: '5',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Demo students
+            const demoStudents = [
+                {
+                    id: generateId(),
+                    role: 'student',
+                    firstName: 'Иван',
+                    lastName: 'Петров',
+                    email: 'ivan@student.ru',
+                    password: btoa('123456'),
+                    subject: 'russian',
+                    grade: '5',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: generateId(),
+                    role: 'student',
+                    firstName: 'Анна',
+                    lastName: 'Сидорова',
+                    email: 'anna@student.ru',
+                    password: btoa('123456'),
+                    subject: 'math',
+                    grade: '5',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            // Demo groups
+            const demoGroups = [
+                {
+                    id: generateId(),
+                    name: 'Русский язык 5А',
+                    subject: 'russian',
+                    grade: '5',
+                    description: 'Основная группа по русскому языку для 5 класса',
+                    teacherId: demoTeacher.id,
+                    teacherName: `${demoTeacher.firstName} ${demoTeacher.lastName}`,
+                    inviteCode: 'GRP-RUS5A',
+                    students: [demoStudents[0]],
+                    lessons: [],
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: generateId(),
+                    name: 'Математика 5Б',
+                    subject: 'math',
+                    grade: '5',
+                    description: 'Углубленное изучение математики',
+                    teacherId: demoTeacher.id,
+                    teacherName: `${demoTeacher.firstName} ${demoTeacher.lastName}`,
+                    inviteCode: 'GRP-MATH5B',
+                    students: [demoStudents[1]],
+                    lessons: [],
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            users.push(demoTeacher, ...demoStudents);
+            groups.push(...demoGroups);
+            
+            saveUsers();
+            saveGroups();
         }
 
         function switchAuthTab(tab) {
@@ -1113,29 +1175,17 @@
         function handleAddStudent(e) {
             e.preventDefault();
             
-            const firstName = document.getElementById('studentFirstName').value;
-            const lastName = document.getElementById('studentLastName').value;
             const email = document.getElementById('studentEmail').value;
             
-            let student = users.find(u => u.email === email && u.role === 'student');
+            // Find existing student
+            const student = users.find(u => u.email === email && u.role === 'student');
             
             if (!student) {
-                student = {
-                    id: generateId(),
-                    role: 'student',
-                    firstName,
-                    lastName,
-                    email,
-                    password: btoa('temp123'),
-                    subject: groups.find(g => g.id === currentGroupId).subject,
-                    grade: groups.find(g => g.id === currentGroupId).grade,
-                    createdAt: new Date().toISOString()
-                };
-                
-                users.push(student);
-                saveUsers();
+                alert('Ученик не найден! Убедитесь, что ученик зарегистрирован в системе.');
+                return;
             }
             
+            // Add student to group
             const group = groups.find(g => g.id === currentGroupId);
             if (!group.students.find(s => s.id === student.id)) {
                 group.students.push({
@@ -1147,6 +1197,7 @@
                 });
                 
                 saveGroups();
+                alert(`Ученик ${student.firstName} ${student.lastName} добавлен в группу!`);
             } else {
                 alert('Этот ученик уже в группе!');
             }
@@ -1265,7 +1316,10 @@
                 submissionsHtml = '<p>Пока нет отправленных работ.</p>';
             } else {
                 submissionsHtml = lesson.submissions.map(submission => {
-                    const student = group.students.find(s => s.id === submission.studentId);
+                    const student = group.students.find(s => s.id === submission.studentId) || {
+                        firstName: 'Неизвестный',
+                        lastName: 'ученик'
+                    };
                     return `
                         <div class="submission-item">
                             <div class="submission-header">
@@ -1437,11 +1491,8 @@
             });
             
             saveGroups();
-            joinGroupModal.classList.add('hidden');
-            codeInput.value = '';
-            renderStudentDashboard();
-            
             alert(`Вы успешно вступили в группу "${group.name}"!`);
+            renderStudentDashboard();
         }
 
         function joinGroupById(groupId) {
@@ -1466,10 +1517,20 @@
             });
             
             saveGroups();
-            joinGroupModal.classList.add('hidden');
-            renderStudentDashboard();
-            
             alert(`Вы успешно вступили в группу "${group.name}"!`);
+            renderStudentDashboard();
+        }
+
+        function showAvailableGroups() {
+            // Scroll to available groups section
+            document.querySelector('.available-groups').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function filterGroups() {
+            const searchTerm = groupSearch.value.toLowerCase();
+            renderAvailableGroups(searchTerm);
         }
 
         function showProfile() {
@@ -1580,6 +1641,7 @@
         }
 
         function renderStudentDashboard() {
+            // Render rules
             const rules = subjectRules[currentUser.subject];
             studentRules.innerHTML = `
                 <h3>${rules.title} - ${currentUser.grade} класс</h3>
@@ -1593,6 +1655,7 @@
                 </ul>
             `;
             
+            // Render student groups
             const studentGroups = groups.filter(g => 
                 g.students.find(s => s.id === currentUser.id)
             );
@@ -1651,14 +1714,29 @@
                 }).join('');
             }
             
+            // Render available groups
+            renderAvailableGroups();
+        }
+
+        function renderAvailableGroups(searchTerm = '') {
             const availableGroups = groups.filter(group => 
                 !group.students.find(s => s.id === currentUser.id) && 
-                group.subject === currentUser.subject && 
-                group.grade === currentUser.grade
-            );
+                (group.subject === currentUser.subject || currentUser.role === 'student') &&
+                (group.grade === currentUser.grade || currentUser.role === 'student')
+            ).filter(group => {
+                if (!searchTerm) return true;
+                return group.name.toLowerCase().includes(searchTerm) || 
+                       group.subject.toLowerCase().includes(searchTerm) ||
+                       group.teacherName.toLowerCase().includes(searchTerm);
+            });
             
-            if (availableGroups.length > 0) {
-                availableGroupsCard.classList.remove('hidden');
+            if (availableGroups.length === 0) {
+                availableGroupsList.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                        <p>${searchTerm ? 'По вашему запросу групп не найдено' : 'Нет доступных групп для вступления'}</p>
+                    </div>
+                `;
+            } else {
                 availableGroupsList.innerHTML = availableGroups.map(group => `
                     <div class="group-card">
                         <div class="group-name">${group.name}</div>
@@ -1675,21 +1753,6 @@
                         </button>
                     </div>
                 `).join('');
-                
-                document.getElementById('joinGroupsList').innerHTML = availableGroups.map(group => `
-                    <div class="group-card" style="margin-bottom: 1rem;">
-                        <div class="group-name">${group.name}</div>
-                        <div class="group-info">
-                            Учитель: ${group.teacherName} | Учеников: ${group.students.length}
-                        </div>
-                        <button class="btn btn-secondary" onclick="joinGroupById('${group.id}')" style="width: 100%; margin-top: 0.5rem;">
-                            Вступить в группу
-                        </button>
-                    </div>
-                `).join('');
-            } else {
-                availableGroupsCard.classList.add('hidden');
-                document.getElementById('joinGroupsList').innerHTML = '<p>Нет доступных групп для вступления</p>';
             }
         }
 
@@ -1711,6 +1774,7 @@
             localStorage.setItem('groups', JSON.stringify(groups));
         }
 
+        // Global functions for event handlers
         window.openAddStudentModal = openAddStudentModal;
         window.openAddLessonModal = openAddLessonModal;
         window.openGroupDetails = openGroupDetails;
@@ -1720,6 +1784,7 @@
         window.gradeSubmission = gradeSubmission;
         window.joinGroupByCode = joinGroupByCode;
         window.joinGroupById = joinGroupById;
+        window.showAvailableGroups = showAvailableGroups;
     </script>
 </body>
 </html>
